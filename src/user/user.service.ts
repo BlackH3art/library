@@ -50,6 +50,7 @@ export class UserService {
       newUser.name = userData.name;
       newUser.login = userData.login;
       newUser.password = userData.password;
+      newUser.type = userData.type;
       await this.userRepository.save(newUser);
   
       return res.status(201).json({ ok: true, msg: "Created" });
