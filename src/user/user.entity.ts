@@ -1,3 +1,4 @@
+import { UserType } from "src/interfaces/UserDataInterface";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -16,6 +17,6 @@ export class User {
   password: string;
 
   @Column()
-  type: "user" | "admin";
+  type: UserType.ADMIN | UserType.USER;
 
 }
