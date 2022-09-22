@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { UserDecorator } from 'src/decorators/UserDecorator';
@@ -33,8 +33,16 @@ export class BookController {
     @UserDecorator() user: User,
     @Res() res: Response
   ): Promise<any> {
-    console.log('user in ctrl --> ', user);
-    
     return this.bookService.addBook(bookData, user, res);
+  }
+
+  @Delete('/:id')
+  @UseGuards(AuthGuard('jwt'))
+  deleteBook(
+    @Param('id') id: string,
+    @UserDecorator() user: User,
+    @Res() res: Response
+  ): Promise<any> {
+    return this.bookService.deleteBook(id, user, res);
   }
 }

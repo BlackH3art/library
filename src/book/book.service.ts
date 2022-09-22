@@ -68,4 +68,28 @@ export class BookService {
       return res.status(500).json({ ok: false, msg: "Server error" });
     }
   }
+
+  async deleteBook(id: string, user: User, res: Response) {
+
+    try {
+
+      if(user.type !== UserType.ADMIN) {
+        return res.status(403).json({ ok: false, msg: "Forbidden" });
+      }
+
+      const book = await this.bookRepository.findOne({ where: { id: id}});
+      if(!book) {
+        return res.status(400).json({ ok: false, msg: "Book doesn't exists" });
+      }
+
+
+      await this.bookRepository.delete(id);
+
+      return res.status(200).json({ ok: true, msg: "Deleted" });
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ ok: false, msg: "Server error" });
+    }
+  }
 }
