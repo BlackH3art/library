@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Response } from 'express';
 import { UserDataInterface, UserError, UserType } from 'src/interfaces/UserDataInterface';
+import { hashPassword } from 'src/utils/hashPassword';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 
@@ -49,7 +50,7 @@ export class UserService {
   
       newUser.name = userData.name;
       newUser.login = userData.login;
-      newUser.password = userData.password;
+      newUser.password = hashPassword(userData.password);
       newUser.type = userData.type;
       await this.userRepository.save(newUser);
   
