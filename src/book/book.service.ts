@@ -32,12 +32,14 @@ export class BookService {
 
   async getAll() {
 
-    return [];
+    const books = await this.bookRepository.find();
+    return books;
   }
 
   async getAllAvailable() {
 
-    return [];
+    const books = await this.bookRepository.find({ where: { borrowed: false }});
+    return books;
   }
 
   async addBook(bookData: BookDataInterface, user: User, res: Response) {

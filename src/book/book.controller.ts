@@ -20,7 +20,7 @@ export class BookController {
     return this.bookService.getAll();
   }
 
-  @Get()
+  @Get('/available')
   @UseGuards(AuthGuard('jwt'))
   getAllAvailable(): Promise<Book[]> {
     return this.bookService.getAllAvailable();
