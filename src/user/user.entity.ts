@@ -19,4 +19,7 @@ export class User {
   @Column()
   type: UserType.ADMIN | UserType.USER;
 
+  @Column()
+  currentToken: string;
+
 }

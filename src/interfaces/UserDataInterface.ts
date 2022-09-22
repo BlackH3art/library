@@ -16,3 +16,8 @@ export interface UserError {
   password: string;
   type: string;
 }
+
+export interface UserResponseInterface {
+  name: string;
+  currentToken: string;
+}
