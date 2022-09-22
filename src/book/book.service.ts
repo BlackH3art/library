@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
+import { BookDataInterface, BookError } from 'src/interfaces/BookDataInterface';
+import { UserType } from 'src/interfaces/UserDataInterface';
+import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { Book } from './book.entity';
 
@@ -7,8 +11,23 @@ import { Book } from './book.entity';
 export class BookService {
 
   constructor(
-    @InjectRepository(Book) private userRepository: Repository<Book>
+    @InjectRepository(Book) private bookRepository: Repository<Book>
   ) {}
+
+  private validate(data: BookDataInterface) {
+
+    const error: BookError = {
+      title: "",
+      ISBN: "",
+      author: ""
+    }
+
+    if(data.title === "") error.title = "Title cannot be empty";
+    if(data.ISBN === "") error.ISBN = "ISBN cannot be empty";
+    if(data.author === "") error.author = "Author cannot be empty";
+
+    return error;
+  }
 
 
   async getAll() {
@@ -19,5 +38,34 @@ export class BookService {
   async getAllAvailable() {
 
     return [];
+  }
+
+  async addBook(bookData: BookDataInterface, user: User, res: Response) {
+
+    try {
+
+      if(user.type !== UserType.ADMIN) {
+        return res.status(403).json({ ok: false, msg: "Forbidden" });
+      }
+
+      const dataError = this.validate(bookData);
+      if(dataError.title || dataError.ISBN || dataError.author) {
+        return res.status(400).json({ ok: false, msg: "Book validation error", data: dataError });
+      }
+
+      const newBook = new Book();
+      newBook.name = bookData.title;
+      newBook.ISBN = bookData.ISBN;
+      newBook.author = bookData.author;
+      newBook.borrowed = false;
+
+      await this.bookRepository.save(newBook);
+
+      return res.status(201).json({ ok: true, msg: "Created" });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ ok: false, msg: "Server error" });
+    }
   }
 }

@@ -3,3 +3,9 @@ export interface BookDataInterface {
   ISBN: string;
   author: string;
 }
+
+export interface BookError {
+  title: string;
+  ISBN: string;
+  author: string;
+}
