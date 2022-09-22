@@ -103,4 +103,25 @@ export class AuthService {
       return res.status(500).json({ msg: "Server error" });
     }
   }
+
+  async logout(user: User, res: Response) {
+
+    try {
+
+      user.currentToken = null;
+      await this.userRepository.save(user);
+
+      res.clearCookie('jwt', {
+        secure: false,
+        domain: "localhost",
+        httpOnly: true
+      });
+
+      return res.status(200).json({ ok: true, msg: "User logged out" });
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ ok: false, msg: "Server error" });
+    }
+  }
 }
