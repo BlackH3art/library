@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
 import { UserDecorator } from 'src/decorators/UserDecorator';
@@ -44,5 +44,16 @@ export class BookController {
     @Res() res: Response
   ): Promise<any> {
     return this.bookService.deleteBook(id, user, res);
+  }
+
+  @Patch('/:id')
+  @UseGuards(AuthGuard('jwt'))
+  updateBook(
+    @Param('id') id: string,
+    @Body() bookData: BookDataInterface,
+    @UserDecorator() user: User,
+    @Res() res: Response
+  ): Promise<any> {
+    return this.bookService.editBook(id, bookData, user, res);
   }
 }

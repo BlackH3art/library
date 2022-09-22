@@ -92,4 +92,35 @@ export class BookService {
       return res.status(500).json({ ok: false, msg: "Server error" });
     }
   }
+
+  async editBook(id: string, bookData: BookDataInterface, user: User, res: Response) {
+
+    try {
+
+      if(user.type !== UserType.ADMIN) {
+        return res.status(403).json({ ok: false, msg: "Forbidden" });
+      }
+
+      const dataError = this.validate(bookData);
+      if(dataError.title || dataError.ISBN || dataError.author) {
+        return res.status(400).json({ ok: false, msg: "Book validation error", data: dataError });
+      }
+
+      const book = await this.bookRepository.findOne({ where: { id: id }});
+      if(!book) {
+        return res.status(400).json({ ok: false, msg: "Book doesn't exists" });
+      }
+
+      book.name = bookData.title;
+      book.ISBN = bookData.ISBN;
+      book.author = bookData.author;
+      await this.bookRepository.save(book);
+
+      return res.status(200).json({ ok: true, msg: "Book updated" });
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ ok: false, msg: "Server error" });
+    }
+  }
 }
