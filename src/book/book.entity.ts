@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/user/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Book {
@@ -17,5 +18,8 @@ export class Book {
 
   @Column()
   borrowed: boolean;
+
+  @ManyToOne(() => User, (user) => user.borrowedBooks)
+  borrower: User;
 
 }

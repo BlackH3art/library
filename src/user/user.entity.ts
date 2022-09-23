@@ -1,5 +1,6 @@
+import { Book } from "src/book/book.entity";
 import { UserType } from "src/interfaces/UserDataInterface";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -22,4 +23,6 @@ export class User {
   @Column()
   currentToken: string;
 
+  @OneToMany(() => Book, (book) => book.borrower)
+  borrowedBooks: Book[];
 }
