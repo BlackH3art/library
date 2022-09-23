@@ -11,7 +11,8 @@ import { Book } from './book.entity';
 export class BookService {
 
   constructor(
-    @InjectRepository(Book) private bookRepository: Repository<Book>
+    @InjectRepository(Book) private bookRepository: Repository<Book>,
+    @InjectRepository(User) private userRepository: Repository<User>
   ) {}
 
   private validate(data: BookDataInterface) {
@@ -46,9 +47,7 @@ export class BookService {
 
     try {
 
-      if(user.type !== UserType.ADMIN) {
-        return res.status(403).json({ ok: false, msg: "Forbidden" });
-      }
+      if(user.type !== UserType.ADMIN) return res.status(403).json({ ok: false, msg: "Forbidden" });
 
       const dataError = this.validate(bookData);
       if(dataError.title || dataError.ISBN || dataError.author) {
@@ -75,14 +74,10 @@ export class BookService {
 
     try {
 
-      if(user.type !== UserType.ADMIN) {
-        return res.status(403).json({ ok: false, msg: "Forbidden" });
-      }
+      if(user.type !== UserType.ADMIN) return res.status(403).json({ ok: false, msg: "Forbidden" });
 
       const book = await this.bookRepository.findOne({ where: { id: id}});
-      if(!book) {
-        return res.status(400).json({ ok: false, msg: "Book doesn't exists" });
-      }
+      if(!book) return res.status(404).json({ ok: false, msg: "Book doesn't exists" });
 
 
       await this.bookRepository.delete(id);
@@ -99,9 +94,7 @@ export class BookService {
 
     try {
 
-      if(user.type !== UserType.ADMIN) {
-        return res.status(403).json({ ok: false, msg: "Forbidden" });
-      }
+      if(user.type !== UserType.ADMIN) return res.status(403).json({ ok: false, msg: "Forbidden" });
 
       const dataError = this.validate(bookData);
       if(dataError.title || dataError.ISBN || dataError.author) {
@@ -109,9 +102,7 @@ export class BookService {
       }
 
       const book = await this.bookRepository.findOne({ where: { id: id }});
-      if(!book) {
-        return res.status(400).json({ ok: false, msg: "Book doesn't exists" });
-      }
+      if(!book) return res.status(404).json({ ok: false, msg: "Book doesn't exists" });
 
       book.name = bookData.title;
       book.ISBN = bookData.ISBN;
@@ -119,6 +110,53 @@ export class BookService {
       await this.bookRepository.save(book);
 
       return res.status(200).json({ ok: true, msg: "Book updated" });
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ ok: false, msg: "Server error" });
+    }
+  }
+
+  async borrowBook(id: string, user: User, res: Response) {
+
+    try {
+      
+      if(user.type !== UserType.USER) return res.status(403).json({ ok: false, msg: "Forbidden" });
+  
+      const book = await this.bookRepository.findOne({ where: { id: id }});
+      if(!book) return res.status(404).json({ ok: false, msg: "Book doesn't exists" });
+      if(book.borrowed) return res.status(405).json({ ok: false, msg: "Book is already borrowed" });
+  
+      book.borrowed = true;
+      book.borrower = user;
+  
+      await this.bookRepository.save(book);
+  
+      return res.status(200).json({ ok: true, msg: "Book borrowed" });
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ ok: false, msg: "Server error" });
+    }
+  }
+
+  async returnBook(id: string, user: User, res: Response) {
+
+    try {
+
+      if(user.type !== UserType.USER) return res.status(403).json({ ok: false, msg: "Forbidden" });
+  
+      const book = await this.bookRepository.findOne({ where: { id: id }, relations: { borrower: true }});
+      if(!book) return res.status(400).json({ ok: false, msg: "Book doesn't exists" });
+      if(!book.borrowed) return res.status(405).json({ ok: false, msg: "Book isn't borrowed" });
+      if(user.id !== book.borrower.id) return res.status(405).json({ ok: false, msg: "You can't return book which you didn't borrow" });
+  
+      book.borrowed = false;
+      book.borrower = null;
+      
+      await this.bookRepository.save(book);
+  
+      return res.status(200).json({ ok: true, msg: "Book returned" });
       
     } catch (error) {
       console.log(error);
