@@ -28,8 +28,8 @@ nest start
 
 
 ## Endpoints:
-### `/user/register` - to create your user.
-#### `POST`
+### `/user/register`
+#### method `POST` - to create your user.
 Necessary data:
 ```json
 {
@@ -42,8 +42,8 @@ Necessary data:
 Assign yourself a role `user` or `admin`.\
 #
 
-### `/auth/login` - to login to your created user or admin account.
-#### `POST`
+### `/auth/login`
+#### method `POST` - to login to your created user or admin account.
 Necessary data:
 ```json
 {
@@ -53,12 +53,12 @@ Necessary data:
 ```
 #
 
-### `/auth/logout` - to logout from your account.
-#### `GET`
+### `/auth/logout`
+#### method `GET` - to logout from your account.
 #
 
-### `/book` - to get all of books stored in library.
-#### `GET`
+### `/book`
+#### method `GET` - to get all of books stored in library.
 Example response:
 ```json
 [
@@ -80,8 +80,8 @@ Example response:
 ```
 #
 
-### `/book/available` - to get all of books that are available to borrow at the moment.
-#### `GET`
+### `/book/available`
+#### method `GET` - to get all of books that are available to borrow at the moment.
 Example response:
 ```json
 [
@@ -97,8 +97,8 @@ Example response:
 #
 
 ## Admin restricted endpoints:
-### `/book` - to add book to library.
-#### `POST`
+### `/book`
+#### method `POST` - to add book to library.
 Necessary data:
 ```json
 {
@@ -109,8 +109,8 @@ Necessary data:
 ```
 #
 
-### `/book/:id` - to edit book.
-#### `PATCH`
+### `/book/:id`
+#### method `PATCH` - to edit book.
 Necessary data:
 ```json
 {
@@ -121,20 +121,20 @@ Necessary data:
 ```
 #
 
-### `/book/:id` - to delete book from library.
-#### `DELETE`
+### `/book/:id`
+#### method `DELETE` - to delete book from library.
 
 #
 
 
 ## User restricted endpoints:
-### `/book/borrow/:id` - to borrow certain book.
-#### `PATCH`
+### `/book/borrow/:id`
+#### method `PATCH` - to borrow certain book.
 
 #
 
-### `/book/borrow/:id` - to return borrowed by user book.
-#### `PATCH`
+### `/book/return/:id`
+#### method `PATCH` - to return borrowed by user book.
 
 #
 
