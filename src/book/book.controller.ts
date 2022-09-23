@@ -56,4 +56,24 @@ export class BookController {
   ): Promise<any> {
     return this.bookService.editBook(id, bookData, user, res);
   }
+
+  @Patch('/borrow/:id')
+  @UseGuards(AuthGuard('jwt'))
+  borrowBook(
+    @Param('id') id: string,
+    @UserDecorator() user: User,
+    @Res() res: Response
+  ): Promise<any> {
+    return this.bookService.borrowBook(id, user, res);
+  }
+
+  @Patch('/return/:id')
+  @UseGuards(AuthGuard('jwt'))
+  returnBook(
+    @Param('id') id: string,
+    @UserDecorator() user: User,
+    @Res() res: Response
+  ): Promise<any> {
+    return this.bookService.returnBook(id, user, res);
+  }
 }
